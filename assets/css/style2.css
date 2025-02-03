@@ -66,21 +66,11 @@ body {
 }
 
 @keyframes floatAnimation {
-    0% {
-        transform: translate(0, 0);
-    }
-    25% {
-        transform: translate(-10px, 15px);
-    }
-    50% {
-        transform: translate(10px, -15px);
-    }
-    75% {
-        transform: translate(-15px, -10px);
-    }
-    100% {
-        transform: translate(15px, 10px);
-    }
+    0% { transform: translateY(0px) translateX(0px); }
+    25% { transform: translateY(calc(var(--directionY) * 10px)) translateX(calc(var(--directionX) * 10px)); }
+    50% { transform: translateY(calc(var(--directionY) * -10px)) translateX(calc(var(--directionX) * 10px)); }
+    75% { transform: translateY(calc(var(--directionY) * 10px)) translateX(calc(var(--directionX) * -10px)); }
+    100% { transform: translateY(0px) translateX(0px); }
 }
 
 .wish-bubble {
@@ -95,11 +85,16 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: scale 0.3s ease-in-out, opacity 0.3s ease-in-out;
     transform: translate(-50%, -50%);
+    max-width: 200px; /* 최대 크기 제한 */
+    max-height: 200px;
+    
+    animation: floatAnimation 5s infinite ease-in-out alternate; /* 애니메이션 적용 */
 }
 
 .wish-bubble:hover {
     scale: 1.2;
     opacity: 0.1;
+    
 }
 
 /* 🔹 부드럽게 떠다니는 애니메이션 */

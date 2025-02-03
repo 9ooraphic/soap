@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>소원비누2</title>
+    <title>wish soap</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sancreek&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/images/icon.png">
+
     
 
 </head>
@@ -163,42 +165,47 @@
         document.querySelector(".video-container").classList.add("show");
     });
 </script>
-<script>document.getElementById("wish-button").addEventListener("click", function () {
-    const wishInput = document.getElementById("wish-input");
-    const wishMessage = document.getElementById("wish-message");
-
-    if (wishInput.value.trim() === "") {
-        alert("소원을 입력하세요!");
-        return;
-    }
-
-    // ✅ 기존 저장된 소원 가져오기
-    let wishes = JSON.parse(localStorage.getItem("wishes")) || [];
-
-    // ✅ 새로운 소원 추가
-    wishes.push(wishInput.value.trim());  
-
-    // 업데이트된 리스트 다시 저장
-    localStorage.setItem("wishes", JSON.stringify(wishes));
-
-    //  입력창 숨기기 및 3초 메시지 표시
-    wishInput.style.display = "none";
-    document.getElementById("wish-button").style.display = "none";
-    wishMessage.style.display = "block";
-
-    // 랜덤 메시지 배열 추가
-    const wishMessages = [
-        "간절히 빌면 이루어질 거예요.",
-        "얼토당토하지 않는 소원입니다.",
-        "더 간절히 싹싹 비세요.",
-        "2주 안에 이루어질 거예요."
-    ];
-
-    let isScrubbing = false; 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyBqFI869fNpWOLI5GKzYBmPlyIOdPua0VM",
+      authDomain: "soap-beb4d.firebaseapp.com",
+      databaseURL: "https://soap-beb4d-default-rtdb.firebaseio.com",
+      projectId: "soap-beb4d",
+      storageBucket: "soap-beb4d.firebasestorage.app",
+      messagingSenderId: "937077807177",
+      appId: "1:937077807177:web:1ccb0e2226059b88570798",
+      measurementId: "G-LMR6KHYTHN"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+  
+    document.getElementById("wish-button").addEventListener("click", function () {
+        const wishInput = document.getElementById("wish-input");
+        const wishMessage = document.getElementById("wish-message");
+  
+        if (wishInput.value.trim() === "") {
+            alert("소원을 입력하세요!");
+            return;
+        }
+  
+        // ✅ Firebase에 소원 저장
+        push(ref(db, "wishes"), wishInput.value.trim());
+  
+        // ✅ 입력창 숨기기 및 3초 메시지 표시
+        wishInput.style.display = "none";
+        document.getElementById("wish-button").style.display = "none";
+        wishMessage.style.display = "block";
+  
+        // ✅ 3초 문지르기 기능 유지
+        let isScrubbing = false; 
         let scrubStartTime;
         let scrubTimer;
         const eventType = "ontouchmove" in window ? "touchmove" : "mousemove";
-
+  
         // 🔹 비누를 문지르기 시작하면 타이머 시작
         video.addEventListener(eventType, (e) => {
             if (!isScrubbing) {
@@ -207,8 +214,7 @@
                 startScrubCheck();
             }
         });
-
-        // 🔹 3초 동안 문지르면 랜덤 메시지 표시
+  
         function startScrubCheck() {
             scrubTimer = setInterval(() => {
                 let elapsedTime = Date.now() - scrubStartTime;
@@ -218,26 +224,26 @@
                 }
             }, 1000);
         }
-
-        // 🔹 문지르기를 멈추면 타이머 초기화
+  
         function resetScrub() {
             clearInterval(scrubTimer);
             isScrubbing = false;
         }
-
-        // 🔹 랜덤 메시지 표시 후 새로고침
+  
         function showRandomMessage() {
-            const randomMessage = wishMessages[Math.floor(Math.random() * wishMessages.length)];
-            alert(randomMessage);
+            const wishMessages = [
+                "간절히 빌면 이루어질 거예요.",
+                "얼토당토하지 않는 소원입니다.",
+                "더 간절히 싹싹 비세요.",
+                "2주 안에 이루어질 거예요."
+            ];
+            alert(wishMessages[Math.floor(Math.random() * wishMessages.length)]);
             location.reload();
         }
-
-        // 🔹 마우스를 떼거나 터치 종료 시 초기화
+  
         video.addEventListener("mouseleave", resetScrub);
         video.addEventListener("mouseup", resetScrub);
         video.addEventListener("touchend", resetScrub);
     });
-</script>
-
-
+  </script>
 </html>
