@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소원 리스트</title>
+    <link rel="stylesheet" href="/assets/css/style2.css">
+    
+</head>
+<body>
+    <div class="video-background">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/3PmVJQUCm4E?enablejsapi=1&autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&fs=0&disablekb=1"
+    id="youtube-video"
+    frameborder="0" 
+    allow="autoplay; encrypted-media"
+    allowfullscreen></iframe>
+   
+</div>
+
+
+    <h1></h1>
+    <div id="wish-container"></div> <!-- 소원이 랜덤하게 떠다닐 컨테이너 -->
+</div>
+<div class="soap-button">
+<a href="/index.html">
+    <img id="soap-icon" src="/assets/images/soapbutton.png" alt="비누 버튼">
+</a>
+</body>
+<script>
+    function loadWishes() {
+        let wishes = JSON.parse(localStorage.getItem("wishes")) || []; // 로컬스토리지에서 소원 가져오기
+        const wishContainer = document.getElementById("wish-container");
+        const soapButton = document.querySelector(".soap-button"); // 비누 버튼 가져오기
+        const buttonRect = soapButton.getBoundingClientRect(); // 비누 버튼 위치 가져오기
+
+        wishes.forEach((wish) => {
+            let wishBubble = document.createElement("div");
+            wishBubble.classList.add("wish-bubble");
+            wishBubble.textContent = wish; // ✅ 문자열 그대로 사용
+
+            let maxX = 85; // 최대 x값 제한 (100vw보다 작게)
+            let maxY = 85; // 최대 y값 제한 (100vh보다 작게)
+
+            let safePosition = false;
+            let x, y;
+
+            while (!safePosition) {
+                x = Math.random() * maxX + 5; // 5vw ~ 90vw 범위
+                y = Math.random() * maxY + 5; // 5vh ~ 90vh 범위
+
+                let bubbleLeft = (x / 100) * window.innerWidth;
+                let bubbleTop = (y / 100) * window.innerHeight;
+
+                // 🔹 비누 버튼과 겹치지 않는 위치 찾기
+                if (!(bubbleLeft + 50 > buttonRect.left &&
+                      bubbleLeft - 50 < buttonRect.right &&
+                      bubbleTop + 50 > buttonRect.top &&
+                      bubbleTop - 50 < buttonRect.bottom)) {
+                    safePosition = true;
+                }
+            }
+
+            wishBubble.style.left = `${x}vw`;
+            wishBubble.style.top = `${y}vh`;
+
+        // 🔹 랜덤한 애니메이션 속도 설정 (5~8초 사이)
+        let randomDuration = Math.random() * 2 + 3; // 5s ~ 8s
+        let randomDelay = Math.random() * 2; // 0s ~ 2s 딜레이 추가
+        wishBubble.style.animation = `floatAnimation ${randomDuration}s infinite ease-in-out alternate`;
+
+        // 🔹 랜덤한 방향 설정
+        let randomDirectionX = Math.random() > 0.5 ? 1 : -1;
+        let randomDirectionY = Math.random() > 0.5 ? 1 : -1;
+
+        wishBubble.style.setProperty('--directionX', randomDirectionX);
+        wishBubble.style.setProperty('--directionY', randomDirectionY);
+
+        wishContainer.appendChild(wishBubble);
+    });
+}
+
+    // ✅ 페이지가 로드될 때 소원 목록 불러오기
+    window.onload = loadWishes;
+
+    
+</script>
+<script>
+    var player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('youtube-video', {
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        event.target.playVideo();
+        event.target.seekTo(20); // 20초부터 시작
+    }
+
+    function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING) {
+            setInterval(() => {
+                let currentTime = player.getCurrentTime();
+                if (currentTime >= 64) { // 106초(1분 46초)에 도달하면
+                    player.seekTo(20); // 20초로 다시 이동
+                }
+            }, 1000);
+        }
+    }
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
+</html>
